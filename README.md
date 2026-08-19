@@ -94,7 +94,6 @@ This script doesn't accept parameters, but the following environment variables a
 | [libzip](https://github.com/nih-at/libzip/releases) | Resource packs | |
 | [sqlite3](https://sqlite.org/download.html) | Plugin use only | Hosted at [DependencyMirror](https://github.com/pmmp/DependencyMirror/releases) to avoid service outages |
 | [libdeflate](https://github.com/ebiggers/libdeflate/blob/master/NEWS.md) | Faster alternative to zlib for network use | |
-| [libffi](https://github.com/libffi/libffi/releases) | Needed by php-ffi, used by the NetherNet (WebRTC) transport | |
 | [pthreads4w](https://sourceforge.net/projects/pthreads4w/files/) | Needed by ext-pmmpthread on Windows | Hosted at [DependencyMirror](https://github.com/pmmp/DependencyMirror/releases) to avoid service outages |
 
 ### PHP & extensions

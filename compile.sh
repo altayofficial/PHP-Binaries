@@ -22,8 +22,6 @@ OPENSSL_VERSION="3.6.0"
 LIBZIP_VERSION="1.11.4"
 SQLITE3_VERSION="3510100" #3.51.1
 LIBDEFLATE_VERSION="c8c56a20f8f621e6a966b716b31f1dedab6a41e3" #1.25 - see above note about "v" prefixes
-LIBFFI_VERSION="3.4.8"
-LIBSRTP_VERSION="2.7.0"
 
 EXT_PMMPTHREAD_VERSION="6.3.0"
 EXT_YAML_VERSION="2.3.0"
@@ -1067,84 +1065,6 @@ function build_libdeflate {
 	write_done
 }
 
-function build_libffi {
-	if [ "$DO_STATIC" == "yes" ]; then
-		local EXTRA_FLAGS="--enable-static --disable-shared"
-	else
-		local EXTRA_FLAGS="--disable-static --enable-shared"
-	fi
-
-	write_library libffi "$LIBFFI_VERSION"
-	local libffi_dir="./libffi-$LIBFFI_VERSION"
-
-	if cant_use_cache "$libffi_dir"; then
-		rm -rf "$libffi_dir"
-		write_download
-		download_file "https://github.com/libffi/libffi/releases/download/v$LIBFFI_VERSION/libffi-$LIBFFI_VERSION.tar.gz" "libffi" | tar -zx >> "$DIR/install.log" 2>&1
-		write_configure
-		cd "$libffi_dir"
-		RANLIB=$RANLIB ./configure --prefix="$INSTALL_DIR" \
-		$EXTRA_FLAGS \
-		--disable-docs \
-		--with-pic \
-		$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
-		write_compile
-		make -j $THREADS >> "$DIR/install.log" 2>&1 && mark_cache
-	else
-		write_caching
-		cd "$libffi_dir"
-	fi
-	write_install
-	make install >> "$DIR/install.log" 2>&1
-	cd ..
-	write_done
-}
-
-#unlike everything else here, libsrtp is never linked into PHP - it's dlopened through FFI at runtime by the
-#NetherNet transport's WebRTC stack, so it has to be a shared library regardless of $DO_STATIC
-function build_libsrtp {
-	write_library libsrtp "$LIBSRTP_VERSION"
-	local libsrtp_dir="./libsrtp-$LIBSRTP_VERSION"
-
-	if cant_use_cache "$libsrtp_dir"; then
-		rm -rf "$libsrtp_dir"
-		write_download
-		download_github_src "cisco/libsrtp" "v$LIBSRTP_VERSION" "libsrtp" | tar -zx >> "$DIR/install.log" 2>&1
-		cd "$libsrtp_dir"
-		mkdir -p build
-		cd build
-		write_configure
-		# libsrtp must always be shared (dlopened via FFI at runtime) even when the global
-		# cross-compile flags force -static;
-		SRTP_CFLAGS="${CFLAGS//-static/}"
-		SRTP_CXXFLAGS="${CXXFLAGS//-static/}"
-		SRTP_LDFLAGS="${LDFLAGS//-Wl,-static/}"
-		SRTP_LDFLAGS="${SRTP_LDFLAGS//-static-libgcc/}"
-		SRTP_LDFLAGS="${SRTP_LDFLAGS//-static/}"
-
-		CFLAGS="$SRTP_CFLAGS" CXXFLAGS="$SRTP_CXXFLAGS" LDFLAGS="$SRTP_LDFLAGS" cmake .. \
-			-DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
-			-DCMAKE_PREFIX_PATH="$INSTALL_DIR" \
-			-DCMAKE_INSTALL_LIBDIR=lib \
-			$CMAKE_GLOBAL_EXTRA_FLAGS \
-			-DBUILD_SHARED_LIBS=ON \
-			-DENABLE_OPENSSL=ON \
-			-DLIBSRTP_TEST_APPS=OFF \
-			-DENABLE_WARNINGS_AS_ERRORS=OFF >> "$DIR/install.log" 2>&1
-		write_compile
-		CFLAGS="$SRTP_CFLAGS" CXXFLAGS="$SRTP_CXXFLAGS" LDFLAGS="$SRTP_LDFLAGS" make -j $THREADS >> "$DIR/install.log" 2>&1 && mark_cache
-		cd ..
-	else
-		write_caching
-		cd "$libsrtp_dir"
-	fi
-	write_install
-	cd build
-	make install >> "$DIR/install.log" 2>&1
-	cd ../..
-	write_done
-}
-
 cd "$LIB_BUILD_DIR"
 
 build_zlib
@@ -1167,8 +1087,6 @@ build_libxml2
 build_libzip
 build_sqlite3
 build_libdeflate
-build_libffi
-build_libsrtp
 
 # PECL libraries
 
@@ -1388,7 +1306,6 @@ $HAS_DEBUG \
 --enable-phar \
 --enable-ctype \
 --enable-sockets \
---with-ffi \
 --enable-shared=no \
 --enable-static=yes \
 --enable-shmop \
