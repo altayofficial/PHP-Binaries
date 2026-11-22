@@ -279,7 +279,7 @@ function unzip-file {
     param ([string] $file, [string] $destination)
 
     #expand-archive doesn't respect script-local ProgressPreference
-    #https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/77
+    #https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/77 
     $oldProgressPref = $global:ProgressPreference
     $global:ProgressPreference = "SilentlyContinue"
     Expand-Archive -Path $file -DestinationPath $destination >> $log_file 2>&1
