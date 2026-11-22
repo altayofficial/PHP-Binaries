@@ -36,6 +36,7 @@ EXT_MORTON_VERSION="0.1.2"
 EXT_XXHASH_VERSION="0.2.0"
 EXT_ARRAYDEBUG_VERSION="0.2.1"
 EXT_ENCODING_VERSION="1.0.0"
+EXT_NETQUEUE_VERSION="0.1.0"
 
 EXT_IGBINARY_VERSION_PHP85="3.2.17RC1"
 
@@ -1151,6 +1152,8 @@ get_github_extension "arraydebug" "$EXT_ARRAYDEBUG_VERSION" "pmmp" "ext-arraydeb
 
 get_github_extension "encoding" "$EXT_ENCODING_VERSION" "pmmp" "ext-encoding"
 
+get_github_extension "netqueue" "$EXT_NETQUEUE_VERSION" "altayofficial" "ext-netqueue"
+
 cafile=""
 if [[ "$COMPILE_TARGET" == "mac"* ]]; then
 	cafile="/etc/ssl/cert.pem"
@@ -1324,6 +1327,7 @@ $HAVE_MYSQLI \
 --enable-xxhash \
 --enable-arraydebug \
 --enable-encoding \
+--enable-netqueue \
 $HAVE_VALGRIND \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 write_compile

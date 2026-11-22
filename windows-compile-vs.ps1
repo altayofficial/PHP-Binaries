@@ -27,6 +27,7 @@ $PHP_XXHASH_VER="0.2.0"
 $PHP_XDEBUG_VER="3.5.0"
 $PHP_ARRAYDEBUG_VER="0.2.1"
 $PHP_ENCODING_VER="1.0.0"
+$PHP_NETQUEUE_VER="0.1.0"
 
 $PHP_IGBINARY_VER_PHP85="3.2.17RC1"
 
@@ -477,6 +478,7 @@ function download-php-extensions {
     get-github-extension "xdebug"                $PHP_XDEBUG_VER                "xdebug"   "xdebug"
     get-github-extension "arraydebug"            $PHP_ARRAYDEBUG_VER            "pmmp"     "ext-arraydebug"
     get-github-extension "encoding"              $PHP_ENCODING_VER              "pmmp"     "ext-encoding"
+    get-github-extension "netqueue"              $PHP_NETQUEUE_VER              "altayofficial" "ext-netqueue"
 
     write-library "php-ext crypto" $PHP_CRYPTO_VER
     write-download
@@ -545,6 +547,7 @@ sdk-command "configure^`
     --enable-json^`
     --enable-mbstring^`
     --enable-morton^`
+    --enable-netqueue=shared^`
     --enable-opcache^`
     --enable-opcache-jit=$PHP_JIT_ENABLE_ARG^`
     --enable-phar^`
@@ -627,6 +630,7 @@ append-file-utf8 "extension=php_leveldb.dll" $php_ini
 append-file-utf8 "extension=php_crypto.dll" $php_ini
 append-file-utf8 "extension=php_libdeflate.dll" $php_ini
 append-file-utf8 "extension=php_encoding.dll" $php_ini
+append-file-utf8 "extension=php_netqueue.dll" $php_ini
 append-file-utf8 "igbinary.compact_strings=0" $php_ini
 if ($PHP_VERSION_ID -lt 80500) {
     append-file-utf8 "zend_extension=php_opcache.dll" $php_ini
